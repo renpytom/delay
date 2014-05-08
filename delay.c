@@ -1,5 +1,5 @@
 /* delay - counts down a specified number of seconds.
-   Copyright (C) 1998 Tom Rothamel.
+   Copyright (C) 1998-2014 Tom Rothamel.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <stdio.h>
@@ -21,6 +21,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include "parsetime.h"
 
 #ifdef HAVE_CURSES_H
@@ -70,10 +71,10 @@ int parseonestd(char *entry) {
 	int commit = 0;
         int t = 0;
 	int usfact = 1000000;
-	
+
 	while (1) {
-		if (!*entry) return commit + t; 
-		
+		if (!*entry) return commit + t;
+
 
 		if (('0' <= *entry) && (*entry <= '9')) {
 			t *= 10;
@@ -88,7 +89,7 @@ int parseonestd(char *entry) {
 			break;
 		case 's':
 			commit += t;
-			t = 0;			
+			t = 0;
 			break;
 		case 'm':
 			commit +=  t * 60;
@@ -121,7 +122,7 @@ int parsestandard(int argc, char **argv) {
 	int i;
 	int dt = 0;
 	int tdt;
-	
+
 	for (i = 0; i < argc; i++) {
 		tdt = parseonestd(argv[i]);
 		if (tdt == -1) return -1;
@@ -144,10 +145,10 @@ void printtime(char *fmt, int time) {
 	char *c;
 	int i;
 	char b;
-	
+
 	c = fmt;
-	
-	
+
+
 	while (*c) {
 		switch (*c) {
 		case '\\':
@@ -172,9 +173,9 @@ void printtime(char *fmt, int time) {
 				printf("%%");
 				break;
 			}
-		    
+
 			break;
-		    
+
 		case '%':
 			strncpy(buf, c, 15);
 			for (i = 1; i < 100; i++) {
@@ -209,7 +210,7 @@ void printtime(char *fmt, int time) {
 			case 0:
 				return;
 			}
-			
+
 			c += i;
 			break;
 		default:
@@ -233,8 +234,8 @@ void usage(char *name) {
 	fprintf(stdout,
 		"Usage: %s [options] <seconds to delay> [-- command]\n"
 		"   or  %s [options] until <timespec> [-- command]\n", name, name);
-	
-	exit(-1);
+
+	exit(1);
 }
 
 void curshowcount(int);
@@ -256,7 +257,7 @@ void showcount(int dtime, int ctype) {
 	case 4:
 		curshowcount(dtime);
 		break;
-		
+
 	}
 
 	fflush(stdout);
@@ -271,7 +272,7 @@ int main(int argc, char **argv) {
 	int i;
 	char **cmd = NULL;
 
-	
+
 	if (strstr(argv[0], "sleep")) ctype = -1;
 
 	for (i = 0; i < argc; i++) {
@@ -287,11 +288,11 @@ int main(int argc, char **argv) {
 			break;
 		}
 	}
-	
+
 	while (1) {
-		opt = getopt(argc, argv, "qu:bhdvmc:CV"); 
+		opt = getopt(argc, argv, "qu:bhdvmc:CV");
 		if (opt == EOF) break;
-	
+
 		switch (opt) {
 		case 'q':
 			ctype = -1;
@@ -322,7 +323,7 @@ int main(int argc, char **argv) {
 			printf("delay - Version " VERSION "\n"
 			       "  Copyright (c) 1998-2002 Tom Rothamel\n"
 			       "  This program has ABSOLUTELY NO WARRANTY. It can be distributed under\n"
-			       "  the terms of the GNU General Public License.\n"); 
+			       "  the terms of the GNU General Public License.\n");
 			exit(0);
 		case 'b':
 			bell = 1;
@@ -338,29 +339,29 @@ int main(int argc, char **argv) {
 
 	if (update < 1) {
 		fprintf(stderr, "%s: The update rate must be a positive integer.\n", argv[0]);
-		exit(-1);
+		exit(1);
 	}
 
 	if (!strcmp(argv[optind], "until")) {
 		dtime = parsetime(argc-optind, &argv[optind+1]);
-		if (!dtime) exit(-1);
+		if (!dtime) exit(1);
 		dtime -= time(NULL);
 	} else {
 		dtime = parsestandard(argc-optind, &argv[optind]);
 	}
-		
+
 	if (dtime < 0) {
 		fprintf(stderr, "%s: You've specified an invalid delay time.\n", argv[0]);
-		usage(argv[0]);		
+		usage(argv[0]);
 	}
-	
+
 	initdelay(1);
 
 	if (ctype == 4) initscr();
-	
+
 	while (dtime > 0) {
 		if (ctype >= 0) showcount(dtime, ctype);
-		
+
 		delay((dtime < update) ? dtime : update, 1); /* always precise. */
 		dtime -= (dtime < update) ? dtime : update;
 	}
@@ -371,14 +372,14 @@ int main(int argc, char **argv) {
 	}
 
 	if (ctype == 4) endwin();
-	
+
 	if (bell) printf("\a");
 
 	if (cmd) {
 		execvp(cmd[0], cmd);
 		perror(argv[0]); /* If it worked, we won't get here. */
-		exit -1;
+		exit(1);
 	}
-	
+
 	exit(0);
 }

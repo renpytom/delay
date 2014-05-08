@@ -1,0 +1,51 @@
+Version 1.6 - 09 February 2002
+	Fixes a bug in the spelling of February in the time parsing 
+	code. 
+
+	Added support for c-style string escapes to the custom format
+	parsing code. Also, removed the implicit carriage return before
+	the printing of custom codes. This allows delay to integrate
+	with programs like osd_cat, using a command line like:
+
+	./delay -c '%02h:%02m:%02s\n' 1h | osd_cat
+
+Version 1.5 - 19 August 2001 
+	This version fixes a bug in getopt., and removes support for
+	building debian packages and rpms. (Those are best done by the
+	various distro maintainers, anyway.)
+
+Version 1.4 - 30 December 1999
+	This version adds support for big ugly curses numbers. This
+	support can be enabled using the '-C' option.
+
+Version 1.3 - 29 June 1999
+	This version allows delay to take a command on the command 
+	line which specifies a program to run when the countdown
+	is complete. (This way, people no longer have to use a 
+	construct like "delay 1m; command" which runs the command
+	if delay is interrupted.)
+	
+Version 1.2a - 2 March 1999
+	This version fixes support for Solaris, which was broken in
+	the BSD fixes. 
+
+Version 1.2 - 1 March 1999
+	This version adds sleep-compatability and fractional-second 
+	delaying, and is the first public release with the FreeBsd
+	patches.
+
+Version 1.1b - 24 February 1999
+	This includes a minor rewrite in the gmt code, so that it works
+	with FreeBsd. And this time it actually works!
+
+Version 1.1a - 23 February 1999
+	This includes a minor rewrite in the gmt code, so that it works
+	with FreeBsd.
+
+Version 1.1 - 31 January 1999
+	This release adds support for a "delay until" feature, the ability
+	to ring a bell when time runs out, and a changed default format
+
+Version 1.0 - 26 January 1999
+	Initial release.
+

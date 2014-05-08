@@ -1,0 +1,32 @@
+Delay - README file
+===================
+
+Tom Rothamel <tom@onegeek.org>
+
+This program implements a way to implement a delay with feedback to the 
+user. It supports a configurable output message, and tries to keep the 
+timing precise. 
+
+Please read the INSTALL file for information on how to compile and 
+install this program. Once installed, 'man delay' should display 
+information on how to use the program.
+
+The parsetimel.l and parsetimey.y files were taken from the files 
+parsetime.l and parsetime.y (respectively) from the at-3.1.7 distribution,
+which was authored by Thomas Koenig and David Parsons. These files are
+used to implement the "delay until" feature. 
+
+Thanks are due to:
+
+ - Gianmarco Giovannelli <gmarco@giovannelli.it>
+	For maintaining a FreeBsd port of delay, and working with me on
+	resolving a few compatibility issues.
+ - Tomi Ollila <Tomi.Ollila@tfi.net>
+	For suggesting many of the features added to version 1.2, and
+	helping with Solaris compatiblity.
+ - Zachary P. Landau <kapheine@www.annex.org> 
+	For suggesting giving delay the ability to run a command, 
+	which was added in version 1.3.
+
+- Tom Rothamel
+  

@@ -1,0 +1,175 @@
+=head1 NAME
+
+delay - counts down a specified number of seconds.
+
+=head1 SYNOPSIS
+
+  delay [options] <length> [-- command]
+  delay [options] until <timespec> [-- command]
+
+=head1 DESCRIPTION
+
+The delay program counts down a length of time specified on
+the command line. By default, it prints out the time remaining
+once a second. The rate and style of printing can be controlled
+using options to the program. This includes the ability to 
+supress the printing entirely. It also somewhat supports delaying
+for fractional seconds.
+
+Delay attempts to compensate for the time it spends printing the
+updates. There should be no error that is a multiple of the 
+time spent delaying. (There is a bit of error on the startup
+and termination of the program, but that's unavoidable.)
+
+There are several ways that the time to delay can be
+specified. The first is that it can be specified as an absolute length
+of time to delay. This can be in several formats. All of the following
+formats are allowable. (And equivalent.)
+
+  delay 1d 2:03:04.5
+  delay 1d 2h 3m 4.5s
+  delay 93785.5
+
+Please note that the fractional seconds code will only work for actual 
+fractional seconds. So, doing things like '0.5h' will delay for half
+a second, and not for half an hour as one may expect. (But don't rely
+on this behavior, as it may change in future versions.)
+
+The second format is for a time to delay until be specified. The
+time parsing code is derived from that used it at, and as a result
+the time specifications should be described on L<at(1)>. For example:
+
+  delay until 4 pm
+  delay until noon tomorrow
+  delay until midnight 13 september 2000
+  delay until now + 5 minutes
+
+Please note that the parsing code has a resolution of a minute. So, the
+last specification would calculate the 5 minutes from the beginning of
+the current minute, and delay to that absolute point in time. If you need
+more precision, you can use the first time format, which allows an 
+the delay length to be specified precisely. 
+
+If delay sees "--" while parsing it's command line, it stops argument 
+processing. Instead, the argument after the "--" is interpreted as a 
+command to be run when delay completes, and any further arguments are
+used as arguments to that command. For example:
+
+  delay until 9:30 -- cdplay
+
+=head1 OPTIONS
+
+Delay allows you to use command line options to control aspects of its
+behavior. Here's a list:
+
+=over 4
+
+=item -q
+
+This enables quiet mode. This prevents delay from outputting the 
+time remaining as it usually does. (This is the default if
+delay is called with "sleep" as part of the program name.)
+
+=item -m
+
+This enables a minimalistic count of the time remaining, with only the
+number of seconds left being displayed. This was the default for delay
+1.0.
+
+=item -d
+
+This enables the default display. The day, hour, minute, and second are
+all broken out into seperate entrys. (This is the default, except for the
+cases where -q is the default.)
+
+=item -v
+
+This enables a more verbose mode of display. (It adds some explanitory 
+text, as compared to -d.)
+
+=item -c
+
+This allows you to specify a custom time prompt. Printf-style formatting
+is performed, with the following being allowed as the possible percent
+substitutions:
+
+  %d	 Days remaining
+  %h	 Hours remaining (modulo 24)
+  %m	 Minutes remaining (modulo 60)
+  %s 	 Seconds remaining (modulo 60)
+  %n 	 Total seconds remaining
+
+For best results, you'll want to make sure that your custom format stays
+the same length throughout the count. Printf-style formatting is done
+on these codes. Use of percent-codes other than the ones listed above
+will lead to undefined behavior. (Crashes, usually.)
+
+The following escapes are also supported:
+
+  \n     Newline
+  \r     Carriage Return
+  \b     Backspace
+  \\     Backslash
+  \%     Percent
+
+Since the custom format no longer implicitly begins with a carriage return,
+it usually makes sense to either begin a custom code with \r or end it 
+with \n.
+
+The standard formats can be expressed as custom codes. Here's a list of
+translations.
+
+  -m	\r% 8n
+  -d	\r% 3d %02h:%02m:%02s
+  -v	\rTime Remaining: %d days, %02h:%02m:%02s.
+
+=item -C
+
+This option enables the display of time remaining in big ugly curses
+numerals. This only displays the hours, minutes, and seconds
+remaining, although the number of hours to go may range above 24.
+
+=item -u
+
+This option takes a single parameter, the time in seconds between
+updates of the time remaining. It need not be a factor of the
+delay length. It defaults to 1 second, and must be at least that
+value.
+
+=item -b
+
+If this option is given, a bell character will be sent when time 
+expires. This may be useful in cases where an xterm is send to
+de-iconify on a bell.
+
+=item -V
+
+If given, delay will display it's version and a short copyright message,
+and will then exit.
+
+=back
+
+=head1 BUGS
+
+The default format is only good for delays of less than 1000 days.
+
+Improper use of the -c option can lead to various problems, and may
+even have some security implications.
+
+execvp(2) is used to run the command, and this may run programs 
+in the current directory rather than fully respecting your path. Please
+see L<execvp(2)> for more details.
+
+=head1 AUTHOR
+
+Tom Rothamel <tom-delay@onegeek.org>
+
+=head1 WEB SITE
+
+The delay web site is located at:
+
+	http://onegeek.org/~tom/software/delay/
+
+=head1 SEE ALSO
+
+L<sleep(1)>, L<printf(3)>, L<at(1)>

@@ -1,0 +1,18 @@
+How to install delay
+====================
+
+Delay's install procedure is quite simple, due to the use of autoconf. To
+compile it, simply run the following commands:
+
+	./configure
+	make
+	make install
+
+Please note that you probably want to be root for that last command, as by
+default it attempts to install in /usr/local/bin/.
+
+./configure takes quite a few options, please read the file INSTALL.autoconf
+for all of the gory details.
+
+- Tom Rothamel, 28 January 1998.
+

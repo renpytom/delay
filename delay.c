@@ -101,6 +101,7 @@ int parseonestd(char *entry) {
 			break;
 		case 'd':
 			commit += t * 86400;
+			t = 0;
 			break;
 		}
 
